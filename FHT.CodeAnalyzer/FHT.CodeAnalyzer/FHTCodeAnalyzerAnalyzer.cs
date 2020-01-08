@@ -39,27 +39,22 @@ namespace FHT.CodeAnalyzer
             //see https://docs.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/tutorials/how-to-write-csharp-analyzer-code-fix
             //also https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Analyzer%20Samples.md
             var cls = (ClassDeclarationSyntax)ctx.Node;
-
-            if (cls.BaseList != null)
-            {
-                var className = cls.Identifier.ToString();
-                var baseNames = cls.BaseList.Types.Select(t => t.Type).OfType<IdentifierNameSyntax>().Select(i => i.Identifier.ToString());
-                var hasBaseTypeOfBaseOrModel = baseNames.Any(n => n.ToLower().Contains("base") || n.ToLower().Contains("model"));
-                if (hasBaseTypeOfBaseOrModel)
+            if (cls.BaseList == null) return;
+            var className = cls.Identifier.ToString();
+            var isUIModel = className.ToLower().Contains("inputmodel") || className.ToLower().Contains("viewmodel");
+            if (!isUIModel) return;
+            var baseNames = cls.BaseList.Types.Select(t => t.Type).OfType<IdentifierNameSyntax>().Select(i => i.Identifier.ToString());
+            var hasBaseTypeOfBaseOrModel = baseNames.Any(n => n.ToLower().Contains("base") || n.ToLower().Contains("model"));
+            if (!hasBaseTypeOfBaseOrModel) return;
+            var baseType = ctx.SemanticModel.GetDeclaredSymbol(cls).BaseType;
+            var isFHTNamespace = baseType.ContainingNamespace.ToString().ToLower().StartsWith("fht.");
+            if (!isFHTNamespace) return;
+                var baseTypeHasIsPolymorphicBaseClassAttribute = baseType.GetAttributes().Any(a => a.AttributeClass.Name == IsPolymorphicBaseClassAttributeName);
+                if (!baseTypeHasIsPolymorphicBaseClassAttribute)
                 {
-                    var baseType = ctx.SemanticModel.GetDeclaredSymbol(cls).BaseType;
-                    var isFHTNamespace = baseType.ContainingNamespace.ToString().ToLower().StartsWith("fht.");
-                    if (isFHTNamespace)
-                    {
-                        var baseTypeHasIsPolymorphicBaseClassAttribute = baseType.GetAttributes().Any(a => a.AttributeClass.Name == IsPolymorphicBaseClassAttributeName);
-                        if (!baseTypeHasIsPolymorphicBaseClassAttribute)
-                        {
-                            var diagnostic = Diagnostic.Create(Rule, cls.GetLocation(), className);
-                            ctx.ReportDiagnostic(diagnostic);
-                        }
-                    }
+                    var diagnostic = Diagnostic.Create(Rule, cls.GetLocation(), className);
+                    ctx.ReportDiagnostic(diagnostic);
                 }
-            }
         }
     }
 }
