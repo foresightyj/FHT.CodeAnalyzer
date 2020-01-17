@@ -76,7 +76,7 @@ namespace FHT.CodeAnalyzer.Test
 
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
         {
-            return new FHTCodeAnalyzerAnalyzer();
+            return new InheritanceCheckAnalyzer();
         }
     }
 }

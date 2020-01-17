@@ -11,10 +11,9 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace FHT.CodeAnalyzer
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class FHTCodeAnalyzerAnalyzer : DiagnosticAnalyzer
+    public class InheritanceCheckAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "FHTCodeAnalyzer";
-
+        public const string DiagnosticId = "FHT_InheritanceCheck";
         // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
         // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Localizing%20Analyzers.md for more on localization
         private const string Category = "Inheritance";

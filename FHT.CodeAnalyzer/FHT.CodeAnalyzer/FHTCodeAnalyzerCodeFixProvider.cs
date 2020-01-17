@@ -22,7 +22,7 @@ namespace FHT.CodeAnalyzer
 
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
-            get { return ImmutableArray.Create(FHTCodeAnalyzerAnalyzer.DiagnosticId); }
+            get { return ImmutableArray.Create(InheritanceCheckAnalyzer.DiagnosticId); }
         }
 
         public sealed override FixAllProvider GetFixAllProvider()
